@@ -1,0 +1,44 @@
+name: playerPoints
+main: net.player.PlayerPoint
+version: 1.1.6
+softdepend:
+  - EasyMySQL
+
+api:
+  - 1.0.9
+load: POSTWORLD
+author: 若水
+permissions:
+  PayerPoints.reload:
+    default: op
+    description: "插件重载"
+  PayerPoints.points:
+    default: true
+    description: "点券主命令"
+  PayerPoints.pay:
+    default: true
+    description: "玩家交易"
+  PayerPoints.give:
+    default: op
+    description: "给予玩家点券"
+  PayerPoints.take:
+    default: op
+    description: "扣除玩家点券"
+  PayerPoints.set:
+    default: op
+    description: "设置玩家点券"
+  PayerPoints.reset:
+    default: op
+    description: "重置玩家点券"
+  PayerPoints.look:
+    default: true
+    description: "查看玩家多少点券"
+  PayerPoints.lead:
+    default: true
+    description: "点券排行榜"
+  PayerPoints.me:
+    default: not op
+    description: "查看自己点券"
+  PayerPoints.up:
+    default: op
+    description: "同步"

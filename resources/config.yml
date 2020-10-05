@@ -1,0 +1,37 @@
+货币名称: "点券"
+
+# 点券的基础数量
+基础数量: 0.0
+
+# 点券的最大值
+点券最大值: 999999999.0
+
+排行榜显示玩家数量: 10
+
+# 0 : uuid 1: 玩家名
+存储类型: 0
+
+兑换EconomyAPI比例: 100
+
+# 1 rmb兑换 1点券
+rmb与点券兑换比例: 1
+
+# 对接 MCRMB 使用
+mcrmb:
+  # 服务器编号
+  sid: 0
+  # 密钥
+  sign: "01a45d564410"
+
+# 需安装DbLib前置
+database:
+  open: false
+  MySQL:
+    port: 3306
+    database: "这里填写表名"
+    username: "用户"
+    password: "密码"
+    host: "mysql的ip"
+
+
+
