@@ -328,7 +328,7 @@ public class Point {
         Map<String,Object> map = new LinkedHashMap<>();
         if(PlayerPoint.getInstance().isCanLoadSql()) {
             SqlDataManager enable = PlayerPoint.getInstance().getEnable().getManager().getSqlManager();
-            SqlDataList<SqlData> data = enable.selectSqlListInSize("user,count",enable.getTableName()+" ORDER BY count DESC",null,0,10);
+            SqlDataList<SqlData> data = enable.selectExecute("user,count",enable.getTableName()+" ORDER BY count DESC",null,0,10);
             for(SqlData o:data){
                 map.put(o.get("user","").toString(),Double.parseDouble(o.get("count",0).toString()));
             }
