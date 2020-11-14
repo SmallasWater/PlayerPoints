@@ -1,10 +1,13 @@
 package net.player;
 
 import cn.nukkit.Player;
+import cn.nukkit.Server;
 import cn.nukkit.event.EventHandler;
 import cn.nukkit.event.Listener;
+import cn.nukkit.event.player.PlayerJoinEvent;
 import cn.nukkit.event.server.DataPacketReceiveEvent;
 import cn.nukkit.network.protocol.ModalFormResponsePacket;
+import cn.nukkit.scheduler.AsyncTask;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
@@ -23,6 +26,11 @@ public class PointListener implements Listener {
     private static final String POINT = "%point%";
     private static final String POINT_NAME = "%name%";
 
+
+    @EventHandler
+    public void onJoin(PlayerJoinEvent event){
+
+    }
 
     @EventHandler
     public void onAddPoint(PlayerAddPointEvent event){

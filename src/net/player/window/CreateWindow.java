@@ -36,6 +36,7 @@ public class CreateWindow {
     }
 
     public static void sendLead(Player player){
+
         FormWindowSimple simple = new FormWindowSimple(PlayerPoint.getInstance().getLanguage().getString("window.title")
                 .replace("%name%", Point.getPointName())+"-- 排行榜","");
         StringBuilder builder = new StringBuilder();

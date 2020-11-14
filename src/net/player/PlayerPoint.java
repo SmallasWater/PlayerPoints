@@ -4,6 +4,7 @@ import cn.nukkit.Server;
 import cn.nukkit.plugin.PluginBase;
 import cn.nukkit.utils.Config;
 import com.smallaswater.easysql.api.SqlEnable;
+import com.smallaswater.easysql.exceptions.MySqlLoginException;
 import com.smallaswater.easysql.mysql.utils.TableType;
 import com.smallaswater.easysql.mysql.utils.Types;
 import com.smallaswater.easysql.mysql.utils.UserData;
@@ -15,6 +16,7 @@ import updata.AutoData;
 
 
 import java.io.File;
+
 
 
 /**
@@ -62,10 +64,9 @@ public class PlayerPoint extends PluginBase {
         }
         if(canUseSql()){
             if(Server.getInstance().getPluginManager().getPlugin("EasyMySQL") != null) {
-                if (!loadSql()) {
-                    return;
+                if (loadSql()) {
+                    canLoadSql = true;
                 }
-                canLoadSql = true;
             }
         }
 
@@ -91,9 +92,14 @@ public class PlayerPoint extends PluginBase {
         String passWorld = getConfig().getString("database.MySQL.password");
         String table = getConfig().getString("database.MySQL.database");
         UserData data = new UserData(user,passWorld,url,port,table);
-        this.enable = new SqlEnable(this,
-                TABLE_NAME,data,new TableType("user", Types.CHAR),new TableType("count",Types.DOUBLE));
-        return !isDisabled();
+        try {
+            this.enable = new SqlEnable(this,
+                    TABLE_NAME, data, new TableType("user", Types.CHAR), new TableType("count", Types.DOUBLE));
+        }catch (MySqlLoginException e){
+            this.getLogger().info(e.getMessage());
+            return false;
+        }
+        return true;
     }
 
 

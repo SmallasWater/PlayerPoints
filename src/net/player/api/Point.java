@@ -89,44 +89,50 @@ public class Point {
         }
         return player;
     }
+
+
     public static double getPoint(Object uuid){
-        if(PlayerPoint.getInstance().isCanLoadSql()){
-            SqlEnable enable = PlayerPoint.getInstance().getEnable();
-            Player player = getPlayer(uuid);
-            String s;
-            if(player != null){
-                SqlDataManager manager = enable.getManager().getSqlManager();
-                SqlDataList<SqlData> o = manager.selectExecute("count",null,"user = ?", new ChunkSqlType(1,player.getUniqueId().toString()));
-                if(o == null){
-                    return 0.0D;
-                }else{
-                    SqlData data = o.get();
-                    if(data == null){
+        if(PlayerPoint.getInstance().isCanLoadSql()) {
+            try {
+                SqlEnable enable = PlayerPoint.getInstance().getEnable();
+                Player player = getPlayer(uuid);
+                String s;
+                if (player != null) {
+                    SqlDataManager manager = enable.getManager().getSqlManager();
+                    SqlDataList<SqlData> o = manager.selectExecute("count", null, "user = ?", new ChunkSqlType(1, player.getUniqueId().toString()));
+                    if (o == null) {
                         return 0.0D;
-                    }else{
-                        s = data.getString("count","0.0D");
+                    } else {
+                        SqlData data = o.get();
+                        if (data == null) {
+                            return 0.0D;
+                        } else {
+                            s = data.getString("count", "0.0D");
+                        }
+                    }
+                } else {
+                    SqlDataManager manager = enable.getManager().getSqlManager();
+                    SqlDataList<SqlData> o = manager.selectExecute("count", null, "user = ?", new ChunkSqlType(1, uuid.toString()));
+                    if (o == null) {
+                        return 0.0D;
+                    } else {
+                        SqlData data = o.get();
+                        if (data == null) {
+                            return 0.0D;
+                        } else {
+                            s = data.getString("count", "0.0D");
+                        }
                     }
                 }
-            }else{
-                SqlDataManager manager = enable.getManager().getSqlManager();
-                SqlDataList<SqlData> o = manager.selectExecute("count",null,"user = ?", new ChunkSqlType(1,uuid.toString()));
-                if(o == null){
+                if (s == null) {
                     return 0.0D;
-                }else{
-                    SqlData data = o.get();
-                    if(data == null){
-                        return 0.0D;
-                    }else{
-                        s = data.getString("count","0.0D");
-                    }
                 }
-            }
-            if(s == null){
+
+                return Double.parseDouble(s);
+            }catch (Exception e){
                 return 0.0D;
             }
-
-            return Double.parseDouble(s);
-        }else {
+        }else{
             Config config = PlayerPoint.getInstance().getPointConfig();
             Player player = getPlayer(uuid);
             if (player != null) {
@@ -153,7 +159,9 @@ public class Point {
                     }
                 }
             }
+
         }
+
         return 0.0D;
     }
 
@@ -241,8 +249,7 @@ public class Point {
                     reducePoint(player,point);
                     addPoint(target,point);
                 }
-//                reducePoint(player,point);
-//                addPoint(target,point);
+
                 return 1;
             }else{
                 return 0;
@@ -251,6 +258,8 @@ public class Point {
 
         return -1;
     }
+
+
 
 
 
