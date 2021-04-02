@@ -36,8 +36,11 @@ public class PointCommand extends PluginCommand<PlayerPoint> {
         this.loadSubCommand(new PaySubCommand(getPlugin()));
         this.loadSubCommand(new ResetSubCommand(getPlugin()));
         this.loadSubCommand(new UpSubCommand(getPlugin()));
-        this.loadSubCommand(new CheckMoneySubCommand(getPlugin()));
-        this.loadSubCommand(new PayMoneySubCommand(getPlugin()));
+        if(PlayerPoint.getInstance().getConfig().getInt("rmb与点券兑换比例") != 0) {
+            this.loadSubCommand(new CheckMoneySubCommand(getPlugin()));
+            this.loadSubCommand(new PayMoneySubCommand(getPlugin()));
+        }
+
         this.loadSubCommand(new SendPayMessageSubCommand(getPlugin()));
 
     }

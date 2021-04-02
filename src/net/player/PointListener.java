@@ -6,15 +6,21 @@ import cn.nukkit.event.EventHandler;
 import cn.nukkit.event.Listener;
 import cn.nukkit.event.player.PlayerJoinEvent;
 import cn.nukkit.event.server.DataPacketReceiveEvent;
+import cn.nukkit.form.element.ElementInput;
+import cn.nukkit.form.window.FormWindowCustom;
+import cn.nukkit.form.window.FormWindowSimple;
 import cn.nukkit.network.protocol.ModalFormResponsePacket;
 import cn.nukkit.scheduler.AsyncTask;
+import cn.nukkit.utils.TextFormat;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
+import net.player.api.CodeException;
 import net.player.api.Point;
 import net.player.api.events.PlayerAddPointEvent;
 import net.player.api.events.PlayerReducePointEvent;
 import net.player.api.events.PlayerSetPointEvent;
+import net.player.api.load.LoadMcRmb;
 import net.player.window.CreateWindow;
 
 
@@ -29,7 +35,7 @@ public class PointListener implements Listener {
 
     @EventHandler
     public void onJoin(PlayerJoinEvent event){
-
+        PlayerPoint.cachePoint.put(event.getPlayer().getName(),Point.myPoint(event.getPlayer()));
     }
 
     @EventHandler
@@ -76,21 +82,84 @@ public class PointListener implements Listener {
                         CreateWindow.sendPay(player);
                         return;
                     }
-                    if(Integer.parseInt(data) == 1){
-                        CreateWindow.sendQ(player);
-                        return;
-                    }
-                    if(Integer.parseInt(data) == 2){
-                        CreateWindow.sendLead(player);
-                        return;
+                    if(PlayerPoint.getInstance().getConfig().getInt("兑换EconomyAPI比例",0) != 0) {
+                        if(Integer.parseInt(data) == 1){
+                            CreateWindow.sendQ(player);
+                            return;
+                        }
+                        if(Integer.parseInt(data) == 2){
+                            CreateWindow.sendLead(player);
+                            return;
 
-                    }
-                    if(Integer.parseInt(data) == 3){
-                        player.sendMessage(PlayerPoint.getInstance().getLanguage().getString("player.point.me")
-                                .replace("%point%", Point.myPoint(player)+"")
-                                .replace("%name%", Point.getPointName()));
+                        }
+                        if(Integer.parseInt(data) == 3){
+                            player.sendMessage(PlayerPoint.getInstance().getLanguage().getString("player.point.me")
+                                    .replace("%point%", Point.myPoint(player)+"")
+                                    .replace("%name%", Point.getPointName()));
 
+                        }
+                    }else{
+                        if(Integer.parseInt(data) == 1){
+                            CreateWindow.sendLead(player);
+                            return;
+
+                        }
+                        if(Integer.parseInt(data) == 2){
+                            player.sendMessage(PlayerPoint.getInstance().getLanguage().getString("player.point.me")
+                                    .replace("%point%", Point.myPoint(player)+"")
+                                    .replace("%name%", Point.getPointName()));
+
+                        }
                     }
+                    if(PlayerPoint.getInstance().getConfig().getInt("rmb与点券兑换比例") != 0){
+                        if(PlayerPoint.getInstance().getConfig().getInt("兑换EconomyAPI比例",0) != 0) {
+                            if(Integer.parseInt(data) == 4){
+                                player.sendMessage("§2正在查询 请稍后..");
+                                Server.getInstance().getScheduler().scheduleAsyncTask(PlayerPoint.getInstance(), new AsyncTask() {
+                                    @Override
+                                    public void onRun() {
+                                        try {
+                                            player.sendMessage("§a 当前可以兑换 "+(PlayerPoint.getInstance().getMcRmb().checkMoney(player.getName()) * PlayerPoint.getInstance().getRmb())+" "+PlayerPoint.getInstance().getPointName());
+                                        } catch (CodeException e) {
+                                            System.out.println(e.getMessage());
+                                        }
+                                    }
+                                });
+                                player.sendMessage("§e查询结束");
+                            }
+                            if(Integer.parseInt(data) == 5){
+                                FormWindowCustom simple = new FormWindowCustom(PlayerPoint.getInstance().getLanguage().getString("window.title")
+                                        .replace("%name%", Point.getPointName())+"-- 兑换");
+
+                                simple.addElement(new ElementInput(TextFormat.colorize('&',"&e请输入你要兑换的数量 ps: &a充值的金额")));
+                                player.showFormWindow(simple,CreateWindow.PM);
+
+                            }
+                        }else{
+                            if(Integer.parseInt(data) == 3){
+                                player.sendMessage("§2正在查询 请稍后..");
+                                Server.getInstance().getScheduler().scheduleAsyncTask(PlayerPoint.getInstance(), new AsyncTask() {
+                                    @Override
+                                    public void onRun() {
+                                        try {
+                                            player.sendMessage("§a 当前可以兑换 "+(PlayerPoint.getInstance().getMcRmb().checkMoney(player.getName()) * PlayerPoint.getInstance().getRmb())+" "+PlayerPoint.getInstance().getPointName());
+                                        } catch (CodeException e) {
+                                            System.out.println(e.getMessage());
+                                        }
+                                    }
+                                });
+                                player.sendMessage("§e查询结束");
+                            }
+                            if(Integer.parseInt(data) == 4){
+                                FormWindowCustom simple = new FormWindowCustom(PlayerPoint.getInstance().getLanguage().getString("window.title")
+                                        .replace("%name%", Point.getPointName())+"-- 兑换");
+
+                                simple.addElement(new ElementInput(TextFormat.colorize('&',"&e请输入你要兑换的数量 ps: &a充值的金额")));
+                                player.showFormWindow(simple,CreateWindow.PM);
+                            }
+                        }
+                    }
+
                     break;
                 case CreateWindow.PAY:
                     if(NULL.equals(data)){
@@ -146,6 +215,46 @@ public class PointListener implements Listener {
                         player.sendMessage("§c请输入合法的数值 ");
                     }
                     break;
+
+                    case CreateWindow.PM:
+                        if(NULL.equals(data)){
+                            return;
+                        }datas = decodeData(data);
+                        if(datas == null || datas.length < 1){
+                            return;
+                        }
+                        count = datas[0].toString();
+                        try {
+                            int money = Integer.parseInt(count);
+                            if (money > 0) {
+                                LoadMcRmb mcRmb = PlayerPoint.getInstance().getMcRmb();
+                                player.sendMessage("§2正在兑换点券 请稍后...");
+                                Server.getInstance().getScheduler().scheduleAsyncTask(PlayerPoint.getInstance(), new AsyncTask() {
+                                    @Override
+                                    public void onRun() {
+                                        try {
+                                            if(mcRmb.toPay(player.getName(),money)){
+                                                Point.addPoint(player.getName(),money * PlayerPoint.getInstance().getRmb());
+                                            }else{
+                                                player.sendMessage("§c兑换点券失败");
+                                            }
+                                        }catch (CodeException e){
+                                            player.sendMessage("§c出现未知错误 请联系管理员解决问题");
+                                            System.out.println(e.getMessage());
+                                        }
+                                    }
+                                });
+                                player.sendMessage("§b兑换结束");
+
+
+                            }else{
+                                player.sendMessage("§c请输入合法的数值 ");
+                            }
+                        }catch (Exception e){
+                            player.sendMessage("§c请输入合法的数值 ");
+                        }
+
+                        break;
 
                     default:break;
 

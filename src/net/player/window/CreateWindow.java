@@ -24,14 +24,23 @@ public class CreateWindow {
 
     public final static int PAY = 0xAEF0002;
 
+    public final static int PM = 0xAEF0004;
+
     public static void sendMenu(Player player){
         FormWindowSimple simple = new FormWindowSimple(PlayerPoint.getInstance().getLanguage().getString("window.title")
                 .replace("%name%", Point.getPointName())+"-- 主页","");
         simple.addButton(new ElementButton("支付"+ Point.getPointName(),new ElementButtonImageData("path","textures/ui/village_hero_effect")));
         String me = "兑换"+ PlayerPoint.getInstance().getLoad().getName();
-        simple.addButton(new ElementButton(me,new ElementButtonImageData("path","textures/ui/Feedback")));
+        if(PlayerPoint.getInstance().getConfig().getInt("兑换EconomyAPI比例",0) != 0){
+            simple.addButton(new ElementButton(me,new ElementButtonImageData("path","textures/ui/Feedback")));
+        }
         simple.addButton(new ElementButton("查看【排行榜】",new ElementButtonImageData("path","textures/ui/store_sort_icon")));
         simple.addButton(new ElementButton("查看【我的"+ Point.getPointName()+"】",new ElementButtonImageData("path","textures/ui/MCoin")));
+        if(PlayerPoint.getInstance().getConfig().getInt("rmb与点券兑换比例") != 0){
+            simple.addButton(new ElementButton("查询在MCRMB的余额",new ElementButtonImageData("path","textures/ui/MCoin")));
+            simple.addButton(new ElementButton("兑换MCRMB的余额",new ElementButtonImageData("path","textures/ui/MCoin")));
+        }
+
         player.showFormWindow(simple,MENU);
     }
 

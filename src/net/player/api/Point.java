@@ -90,12 +90,40 @@ public class Point {
         return player;
     }
 
+    private static String getCacheName(Object uuid){
+        Player player = getPlayer(uuid);
+        String name;
+        if(player != null){
+            if (PlayerPoint.getInstance().canSaveUUID()) {
+                name = player.getUniqueId().toString();
+            } else {
+                name = player.getName();
+            }
+        }else{
+            if (PlayerPoint.getInstance().canSaveUUID()) {
+                name = uuid.toString();
+            } else {
+                if (uuid instanceof UUID) {
+                    name = Point.getPlayerNameByUUID((UUID) uuid);
+                } else {
+                    name = uuid.toString();
+                }
+            }
+        }
+        return name;
+    }
 
     public static double getPoint(Object uuid){
+        Player player = getPlayer(uuid);
+        String name = getCacheName(uuid);
+        if(PlayerPoint.cachePoint.containsKey(name)){
+            return PlayerPoint.cachePoint.get(name);
+        }
+
         if(PlayerPoint.getInstance().isCanLoadSql()) {
             try {
                 SqlEnable enable = PlayerPoint.getInstance().getEnable();
-                Player player = getPlayer(uuid);
+
                 String s;
                 if (player != null) {
                     SqlDataManager manager = enable.getManager().getSqlManager();
@@ -134,7 +162,7 @@ public class Point {
             }
         }else{
             Config config = PlayerPoint.getInstance().getPointConfig();
-            Player player = getPlayer(uuid);
+            player = getPlayer(uuid);
             if (player != null) {
                 if (PlayerPoint.getInstance().canSaveUUID()) {
                     return config.getDouble(player.getUniqueId().toString());
@@ -166,6 +194,7 @@ public class Point {
     }
 
     public static void setPoint(Object uuid,double point){
+        PlayerPoint.cachePoint.remove(getCacheName(uuid));
         if(PlayerPoint.getInstance().isCanLoadSql()) {
             Player player = getPlayer(uuid);
             String s = uuid.toString();
@@ -208,6 +237,8 @@ public class Point {
             }
             config.save();
         }
+        PlayerPoint.cachePoint.put(getCacheName(uuid),myPoint(getCacheName(uuid)));
+
     }
     private static boolean canReduce(Object uuid,double point){
         if(point > 0){
@@ -334,6 +365,12 @@ public class Point {
      * 排行榜
      * */
     public static HashMap<String,Number> getPlayerRankingList(){
+
+        return toRankList(getPlayerAllMoney());
+
+    }
+
+    public static LinkedHashMap<String, Double> getPlayerAllMoney(){
         Map<String,Object> map = new LinkedHashMap<>();
         if(PlayerPoint.getInstance().isCanLoadSql()) {
             SqlDataManager enable = PlayerPoint.getInstance().getEnable().getManager().getSqlManager();
@@ -348,9 +385,10 @@ public class Point {
         for(String name:map.keySet()){
             rank.put(name, (double)map.get(name));
         }
-        return toRankList(rank);
+        return rank;
 
     }
+
 
     private static LinkedHashMap<String,Number> toRankList(LinkedHashMap<String, ? extends Number> map){
         LinkedHashMap<String,Number> rank = new LinkedHashMap<>();

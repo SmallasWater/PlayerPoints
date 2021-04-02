@@ -10,13 +10,14 @@ import com.smallaswater.easysql.mysql.utils.Types;
 import com.smallaswater.easysql.mysql.utils.UserData;
 import net.player.api.load.LoadMcRmb;
 import net.player.api.load.LoadMoney;
+import net.player.api.load.LoadSql;
 import net.player.commands.PointCommand;
 
 import updata.AutoData;
 
 
 import java.io.File;
-
+import java.util.LinkedHashMap;
 
 
 /**
@@ -48,7 +49,11 @@ public class PlayerPoint extends PluginBase {
 
     private int rmb;
 
+
     private LoadMcRmb mcRmb;
+
+    public static LinkedHashMap<String,Double> cachePoint = new LinkedHashMap<>();
+
 
 
     @Override
@@ -62,12 +67,17 @@ public class PlayerPoint extends PluginBase {
                 return;
             }
         }
-        if(canUseSql()){
-            if(Server.getInstance().getPluginManager().getPlugin("EasyMySQL") != null) {
-                if (loadSql()) {
-                    canLoadSql = true;
-                }
+        LoadSql sql = null;
+        try {
+            Class.forName("com.smallaswater.easysql.exceptions.MySqlLoginException");
+            sql = new LoadSql();
+        }catch (Exception ignore){}
+        if(sql != null){
+            canLoadSql = sql.getLoadSql();
+            if(canLoadSql){
+                enable = sql.getEnable();
             }
+
         }
 
         this.load();
@@ -85,22 +95,7 @@ public class PlayerPoint extends PluginBase {
         return canLoadSql;
     }
 
-    private boolean loadSql(){
-        String user = getConfig().getString("database.MySQL.username");
-        int port = getConfig().getInt("database.MySQL.port");
-        String url = getConfig().getString("database.MySQL.host");
-        String passWorld = getConfig().getString("database.MySQL.password");
-        String table = getConfig().getString("database.MySQL.database");
-        UserData data = new UserData(user,passWorld,url,port,table);
-        try {
-            this.enable = new SqlEnable(this,
-                    TABLE_NAME, data, new TableType("user", Types.CHAR), new TableType("count", Types.DOUBLE));
-        }catch (MySqlLoginException e){
-            this.getLogger().info(e.getMessage());
-            return false;
-        }
-        return true;
-    }
+
 
 
     public LoadMoney getLoad() {
