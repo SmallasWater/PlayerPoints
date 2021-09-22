@@ -1,7 +1,9 @@
 package net.player.commands.player;
 
 import cn.nukkit.Player;
+import cn.nukkit.Server;
 import cn.nukkit.command.CommandSender;
+import cn.nukkit.utils.TextFormat;
 import net.player.PlayerPoint;
 import net.player.api.Point;
 import net.player.commands.SubCommand;
@@ -35,6 +37,10 @@ public class PaySubCommand extends SubCommand {
     @Override
     public boolean execute(CommandSender sender, String[] args) {
         if(args.length > 2){
+            if(!PlayerPoint.getInstance().getConfig().getBoolean("是否允许交易",false)){
+                sender.sendMessage(TextFormat.RED+"服务器禁止点券交易");
+                return true;
+            }
             String target = args[1];
             String pointString = args[2];
             double point;
@@ -42,6 +48,17 @@ public class PaySubCommand extends SubCommand {
                 point = Double.parseDouble(pointString);
             }else{
                 sender.sendMessage("请输入正确的数值");
+                return false;
+            }
+            Player p = Server.getInstance().getPlayer(target);
+            if(p != null){
+                target = p.getName();
+            }else{
+                sender.sendMessage(TextFormat.RED+"玩家不在线");
+                return false;
+            }
+            if(target.equalsIgnoreCase(sender.getName())){
+                sender.sendMessage(TextFormat.RED+"不能转账给自己");
                 return false;
             }
 

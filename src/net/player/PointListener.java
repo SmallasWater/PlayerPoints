@@ -33,10 +33,7 @@ public class PointListener implements Listener {
     private static final String POINT_NAME = "%name%";
 
 
-    @EventHandler
-    public void onJoin(PlayerJoinEvent event){
-        PlayerPoint.cachePoint.put(event.getPlayer().getName(),Point.myPoint(event.getPlayer()));
-    }
+
 
     @EventHandler
     public void onAddPoint(PlayerAddPointEvent event){
@@ -78,10 +75,15 @@ public class PointListener implements Listener {
                     if(NULL.equals(data)){
                         return;
                     }
-                    if(Integer.parseInt(data) == 0){
-                        CreateWindow.sendPay(player);
-                        return;
+                    if(!PlayerPoint.getInstance().getConfig().getBoolean("是否允许交易",false)){
+                        data = (Integer.parseInt(data)+1)+ "";
+                    }else{
+                        if(Integer.parseInt(data) == 0){
+                            CreateWindow.sendPay(player);
+                            return;
+                        }
                     }
+
                     if(PlayerPoint.getInstance().getConfig().getInt("兑换EconomyAPI比例",0) != 0) {
                         if(Integer.parseInt(data) == 1){
                             CreateWindow.sendQ(player);
@@ -165,6 +167,10 @@ public class PointListener implements Listener {
                     if(NULL.equals(data)){
                         return;
                     }
+                    if(!PlayerPoint.getInstance().getConfig().getBoolean("是否允许交易",false)){
+                        player.sendMessage(TextFormat.RED+"服务器禁止点券交易");
+                        return;
+                    }
                     Object[] datas = decodeData(data);
                     if(datas == null || datas.length < 1){
                         return;
@@ -172,6 +178,17 @@ public class PointListener implements Listener {
                     String target = (String) datas[0];
                     String p = (String) datas[1];
                     if(Point.isRightNumberPoint(p)){
+                        Player p1 = Server.getInstance().getPlayer(target);
+                        if(p1 != null){
+                            target = p1.getName();
+                        }else{
+                            player.sendMessage(TextFormat.RED+"玩家不在线");
+                            return;
+                        }
+                        if(target.equalsIgnoreCase(player.getName())){
+                            player.sendMessage(TextFormat.RED+"不能转账给自己");
+                            return;
+                        }
                         int i = Point.playerPayTargetPoint(player.getUniqueId(), Point.getUUIDByPlayerName(target),Double.parseDouble(p));
                         if(i == 0){
                             player.sendMessage(PlayerPoint.getInstance().getLanguage().getString("player.point.not.enough")

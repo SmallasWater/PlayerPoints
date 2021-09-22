@@ -8,6 +8,7 @@ import com.smallaswater.easysql.exceptions.MySqlLoginException;
 import com.smallaswater.easysql.mysql.utils.TableType;
 import com.smallaswater.easysql.mysql.utils.Types;
 import com.smallaswater.easysql.mysql.utils.UserData;
+import com.smallaswater.easysql.v3.mysql.manager.SqlManager;
 import net.player.api.load.LoadMcRmb;
 import net.player.api.load.LoadMoney;
 import net.player.api.load.LoadSql;
@@ -45,14 +46,13 @@ public class PlayerPoint extends PluginBase {
 
     private Config pointConfig = null;
 
-    private SqlEnable enable;
+    private SqlManager enable;
 
     private int rmb;
 
 
     private LoadMcRmb mcRmb;
 
-    public static LinkedHashMap<String,Double> cachePoint = new LinkedHashMap<>();
 
 
 
@@ -67,11 +67,14 @@ public class PlayerPoint extends PluginBase {
                 return;
             }
         }
+
         LoadSql sql = null;
         try {
             Class.forName("com.smallaswater.easysql.exceptions.MySqlLoginException");
             sql = new LoadSql();
-        }catch (Exception ignore){}
+        }catch (Exception ignore){
+
+        }
         if(sql != null){
             canLoadSql = sql.getLoadSql();
             if(canLoadSql){
@@ -159,7 +162,7 @@ public class PlayerPoint extends PluginBase {
         return count;
     }
 
-    public SqlEnable getEnable() {
+    public SqlManager getEnable() {
         return enable;
     }
 

@@ -62,6 +62,7 @@ public class LoadMcRmb {
         if(section.size() == 0){
             return false;
         }
+
         Map map = section.getMapList("data").get(0);
         if(Integer.parseInt(section.getString("code")) == 101){
             if(player != null){

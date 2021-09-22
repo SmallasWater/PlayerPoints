@@ -29,7 +29,9 @@ public class CreateWindow {
     public static void sendMenu(Player player){
         FormWindowSimple simple = new FormWindowSimple(PlayerPoint.getInstance().getLanguage().getString("window.title")
                 .replace("%name%", Point.getPointName())+"-- 主页","");
-        simple.addButton(new ElementButton("支付"+ Point.getPointName(),new ElementButtonImageData("path","textures/ui/village_hero_effect")));
+        if(PlayerPoint.getInstance().getConfig().getBoolean("是否允许交易",false)) {
+            simple.addButton(new ElementButton("支付" + Point.getPointName(), new ElementButtonImageData("path", "textures/ui/village_hero_effect")));
+        }
         String me = "兑换"+ PlayerPoint.getInstance().getLoad().getName();
         if(PlayerPoint.getInstance().getConfig().getInt("兑换EconomyAPI比例",0) != 0){
             simple.addButton(new ElementButton(me,new ElementButtonImageData("path","textures/ui/Feedback")));

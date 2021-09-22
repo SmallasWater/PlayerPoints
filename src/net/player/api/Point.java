@@ -4,11 +4,11 @@ import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.utils.Config;
 
-import com.smallaswater.easysql.api.SqlEnable;
+
 import com.smallaswater.easysql.mysql.data.SqlData;
 import com.smallaswater.easysql.mysql.data.SqlDataList;
-import com.smallaswater.easysql.mysql.data.SqlDataManager;
 import com.smallaswater.easysql.mysql.utils.ChunkSqlType;
+import com.smallaswater.easysql.v3.mysql.manager.SqlManager;
 import net.player.PlayerPoint;
 import net.player.api.events.PlayerAddPointEvent;
 import net.player.api.events.PlayerPayTargetEvent;
@@ -18,6 +18,8 @@ import net.player.api.events.PlayerSetPointEvent;
 
 import java.io.File;
 import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.regex.Pattern;
 
 /**
@@ -25,6 +27,10 @@ import java.util.regex.Pattern;
  * @author 若水
  */
 public class Point {
+
+    private static ExecutorService service = Executors.newCachedThreadPool();
+
+    private static LinkedHashMap<String, Double> cachePoint = new LinkedHashMap<>();
 
     public static void addPoint(UUID player,double point){
         if(point > 0){
@@ -113,53 +119,63 @@ public class Point {
         return name;
     }
 
-    public static double getPoint(Object uuid){
-        Player player = getPlayer(uuid);
-        String name = getCacheName(uuid);
-        if(PlayerPoint.cachePoint.containsKey(name)){
-            return PlayerPoint.cachePoint.get(name);
-        }
-
-        if(PlayerPoint.getInstance().isCanLoadSql()) {
-            try {
-                SqlEnable enable = PlayerPoint.getInstance().getEnable();
-
-                String s;
-                if (player != null) {
-                    SqlDataManager manager = enable.getManager().getSqlManager();
-                    SqlDataList<SqlData> o = manager.selectExecute("count", null, "user = ?", new ChunkSqlType(1, player.getUniqueId().toString()));
-                    if (o == null) {
-                        return 0.0D;
-                    } else {
-                        SqlData data = o.get();
-                        if (data == null) {
-                            return 0.0D;
-                        } else {
-                            s = data.getString("count", "0.0D");
-                        }
-                    }
-                } else {
-                    SqlDataManager manager = enable.getManager().getSqlManager();
-                    SqlDataList<SqlData> o = manager.selectExecute("count", null, "user = ?", new ChunkSqlType(1, uuid.toString()));
-                    if (o == null) {
-                        return 0.0D;
-                    } else {
-                        SqlData data = o.get();
-                        if (data == null) {
-                            return 0.0D;
-                        } else {
-                            s = data.getString("count", "0.0D");
-                        }
+    private static void cache(Object uuid){
+        double d;
+        try {
+            SqlManager enable = PlayerPoint.getInstance().getEnable();
+            String s = null;
+            Player player = getPlayer(uuid);
+            if (player != null) {
+//                SqlDataManager manager = enable.getManager().getSqlManager();
+                SqlDataList<SqlData> o = enable.getData("SELECT count FROM "+PlayerPoint.TABLE_NAME+" WHERE user = ?",new ChunkSqlType(1, player.getUniqueId().toString()));
+//                SqlDataList<SqlData> o = enable.selectExecute("count", null, "user = ?", );
+                if (o != null) {
+                    SqlData data = o.get();
+                    if (data != null) {
+                        s = data.getString("count", "0.0D");
                     }
                 }
-                if (s == null) {
-                    return 0.0D;
+            } else {
+//                SqlDataManager manager = enable.getManager().getSqlManager();
+                SqlDataList<SqlData> o = enable.getData("SELECT count FROM "+PlayerPoint.TABLE_NAME+" WHERE user = ?", new ChunkSqlType(1, uuid.toString()));
+                if (o != null) {
+                    SqlData data = o.get();
+                    if (data != null) {
+                        s = data.getString("count", "0.0D");
+                    }
                 }
-
-                return Double.parseDouble(s);
-            }catch (Exception e){
-                return 0.0D;
             }
+            if (s == null) {
+                d =  0.0D;
+            }else {
+                d = Double.parseDouble(s);
+            }
+        }catch (Exception e){
+            d =  0.0D;
+        }
+        cachePoint.put(getCacheName(uuid),d);
+    }
+    public static double getPoint(Object uuid){
+        return getPoint(uuid,false);
+    }
+
+    public static double getPoint(Object uuid,boolean updata){
+        Player player;
+        if(PlayerPoint.getInstance().isCanLoadSql()) {
+            double d;
+            if(updata){
+                cache(uuid);
+            }else{
+                if(cachePoint.containsKey(getCacheName(uuid))){
+                    service.execute(() -> cache(uuid));
+                }else{
+                    cache(uuid);
+                }
+            }
+
+            d = cachePoint.get(getCacheName(uuid));
+            return d;
+
         }else{
             Config config = PlayerPoint.getInstance().getPointConfig();
             player = getPlayer(uuid);
@@ -194,55 +210,57 @@ public class Point {
     }
 
     public static void setPoint(Object uuid,double point){
-        PlayerPoint.cachePoint.remove(getCacheName(uuid));
-        if(PlayerPoint.getInstance().isCanLoadSql()) {
-            Player player = getPlayer(uuid);
-            String s = uuid.toString();
-            SqlDataManager enable = PlayerPoint.getInstance().getEnable().getManager().getSqlManager();
-            if(player != null){
-                s = player.getUniqueId().toString();
-            }
-            if(enable.isExists("user",s)) {
-                enable.setData(new SqlData("user", s ).put("count",point),new SqlData("user", s));
-            }else{
-                enable.insertData(new SqlData("count",   point ).put("user",  s ));
-
-            }
-        }else {
-            Config config = PlayerPoint.getInstance().getPointConfig();
-            Player player = getPlayer(uuid);
-            if (player != null) {
-                if (PlayerPoint.getInstance().canSaveUUID()) {
-                    config.set(player.getUniqueId().toString(), point);
-                } else {
-                    config.set(player.getName(), point);
+        service.execute(() -> {
+            if(PlayerPoint.getInstance().isCanLoadSql()) {
+                Player player = getPlayer(uuid);
+                String s = uuid.toString();
+                SqlManager enable = PlayerPoint.getInstance().getEnable();
+                if(player != null){
+                    s = player.getUniqueId().toString();
                 }
-            } else {
-                if (PlayerPoint.getInstance().canSaveUUID()) {
-                    if (uuid instanceof String) {
-                        UUID uuid1 = Point.getUUIDByPlayerName(uuid.toString());
-                        if (uuid1 != null) {
-                            config.set(uuid1.toString(), point);
+                if(enable.isExistsData(PlayerPoint.TABLE_NAME,"user",s)) {
+                    enable.setData(PlayerPoint.TABLE_NAME,new SqlData("user", s ).put("count",point),new SqlData("user", s));
+                }else{
+                    enable.insertData(PlayerPoint.TABLE_NAME,new SqlData("count",   point ).put("user",  s ));
+
+                }
+            }else {
+                Config config = PlayerPoint.getInstance().getPointConfig();
+                Player player = getPlayer(uuid);
+                if (player != null) {
+                    if (PlayerPoint.getInstance().canSaveUUID()) {
+                        config.set(player.getUniqueId().toString(), point);
+                    } else {
+                        config.set(player.getName(), point);
+                    }
+                } else {
+                    if (PlayerPoint.getInstance().canSaveUUID()) {
+                        if (uuid instanceof String) {
+                            UUID uuid1 = Point.getUUIDByPlayerName(uuid.toString());
+                            if (uuid1 != null) {
+                                config.set(uuid1.toString(), point);
+                            }
+                        } else {
+                            config.set(uuid.toString(), point);
                         }
                     } else {
-                        config.set(uuid.toString(), point);
-                    }
-                } else {
-                    if (uuid instanceof UUID) {
-                        config.set((Point.getPlayerNameByUUID((UUID) uuid)), point);
-                    } else {
-                        config.set(uuid.toString(), point);
+                        if (uuid instanceof UUID) {
+                            config.set((Point.getPlayerNameByUUID((UUID) uuid)), point);
+                        } else {
+                            config.set(uuid.toString(), point);
+                        }
                     }
                 }
+                config.save();
             }
-            config.save();
-        }
-        PlayerPoint.cachePoint.put(getCacheName(uuid),myPoint(getCacheName(uuid)));
+        });
+
+
 
     }
-    private static boolean canReduce(Object uuid,double point){
+    public static boolean canReduce(Object uuid,double point){
         if(point > 0){
-            double old = getPoint(uuid);
+            double old = getPoint(uuid,true);
             return (old >= point);
         }
         return false;
@@ -274,6 +292,9 @@ public class Point {
     public static int playerPayTargetPoint(UUID player, UUID target, double point){
         if(player != null && target != null){
             if(myPoint(player) >= point){
+                if(player.equals(target)){
+                    return 0;
+                }
                 PlayerPayTargetEvent event = new PlayerPayTargetEvent(player,target,point);
                 Server.getInstance().getPluginManager().callEvent(event);
                 if(!event.isCancelled()){
@@ -365,21 +386,16 @@ public class Point {
      * 排行榜
      * */
     public static HashMap<String,Number> getPlayerRankingList(){
-
         return toRankList(getPlayerAllMoney());
 
     }
 
     public static LinkedHashMap<String, Double> getPlayerAllMoney(){
-        Map<String,Object> map = new LinkedHashMap<>();
-        if(PlayerPoint.getInstance().isCanLoadSql()) {
-            SqlDataManager enable = PlayerPoint.getInstance().getEnable().getManager().getSqlManager();
-            SqlDataList<SqlData> data = enable.selectExecute("user,count",enable.getTableName()+" ORDER BY count DESC",null,0,10);
-            for(SqlData o:data){
-                map.put(o.get("user","").toString(),Double.parseDouble(o.get("count",0).toString()));
-            }
-        }else{
+        Map<String,Object> map;
+        if(!PlayerPoint.getInstance().isCanLoadSql()) {
             map = PlayerPoint.getInstance().getPointConfig().getAll();
+        }else{
+            return cachePoint;
         }
         LinkedHashMap<String,Double> rank = new LinkedHashMap<>();
         for(String name:map.keySet()){
