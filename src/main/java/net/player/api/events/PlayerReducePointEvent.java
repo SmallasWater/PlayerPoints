@@ -1,12 +1,9 @@
 package net.player.api.events;
 
 
-import cn.nukkit.Player;
 import cn.nukkit.event.Cancellable;
 import cn.nukkit.event.Event;
 import cn.nukkit.event.HandlerList;
-
-import java.util.UUID;
 
 
 /**

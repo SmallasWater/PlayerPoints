@@ -3,22 +3,14 @@ package net.player;
 import cn.nukkit.Server;
 import cn.nukkit.plugin.PluginBase;
 import cn.nukkit.utils.Config;
-import com.smallaswater.easysql.api.SqlEnable;
-import com.smallaswater.easysql.exceptions.MySqlLoginException;
-import com.smallaswater.easysql.mysql.utils.TableType;
-import com.smallaswater.easysql.mysql.utils.Types;
-import com.smallaswater.easysql.mysql.utils.UserData;
 import com.smallaswater.easysql.v3.mysql.manager.SqlManager;
 import net.player.api.load.LoadMcRmb;
 import net.player.api.load.LoadMoney;
 import net.player.api.load.LoadSql;
 import net.player.commands.PointCommand;
-
 import updata.AutoData;
 
-
 import java.io.File;
-import java.util.LinkedHashMap;
 
 
 /**

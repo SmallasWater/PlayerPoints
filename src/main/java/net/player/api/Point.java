@@ -3,8 +3,6 @@ package net.player.api;
 import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.utils.Config;
-
-
 import com.smallaswater.easysql.mysql.data.SqlData;
 import com.smallaswater.easysql.mysql.data.SqlDataList;
 import com.smallaswater.easysql.mysql.utils.ChunkSqlType;
@@ -14,7 +12,6 @@ import net.player.api.events.PlayerAddPointEvent;
 import net.player.api.events.PlayerPayTargetEvent;
 import net.player.api.events.PlayerReducePointEvent;
 import net.player.api.events.PlayerSetPointEvent;
-
 
 import java.io.File;
 import java.util.*;
