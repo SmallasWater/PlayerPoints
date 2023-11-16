@@ -33,17 +33,16 @@ public class PointCommand extends PluginCommand<PlayerPoint> {
         this.loadSubCommand(new LeadSubCommand(getPlugin()));
         this.loadSubCommand(new LookSubCommand(getPlugin()));
         this.loadSubCommand(new MeSubCommand(getPlugin()));
-        if(PlayerPoint.getInstance().getConfig().getBoolean("是否允许交易",false)) {
+        if (PlayerPoint.getInstance().getConfig().getBoolean("是否允许交易", false)) {
             this.loadSubCommand(new PaySubCommand(getPlugin()));
         }
         this.loadSubCommand(new ResetSubCommand(getPlugin()));
         this.loadSubCommand(new UpSubCommand(getPlugin()));
-        if(PlayerPoint.getInstance().getConfig().getInt("rmb与点券兑换比例") != 0) {
+        if (PlayerPoint.getInstance().getConfig().getInt("rmb与点券兑换比例") != 0) {
             this.loadSubCommand(new CheckMoneySubCommand(getPlugin()));
             this.loadSubCommand(new PayMoneySubCommand(getPlugin()));
             this.loadSubCommand(new SendPayMessageSubCommand(getPlugin()));
         }
-
 
 
     }
@@ -60,13 +59,13 @@ public class PointCommand extends PluginCommand<PlayerPoint> {
     @Override
     public boolean execute(CommandSender sender, String s, String[] args) {
         if (!sender.hasPermission("PayerPoints.points")) {
-            sender.sendMessage(TextFormat.RED+"抱歉，，您没有使用此指令权限");
+            sender.sendMessage(TextFormat.RED + "抱歉，，您没有使用此指令权限");
             return true;
         }
-        if(args.length == 0){
-            if(sender instanceof Player){
+        if (args.length == 0) {
+            if (sender instanceof Player) {
                 CreateWindow.sendMenu((Player) sender);
-            }else{
+            } else {
                 sender.sendMessage("控制台无法显示GUI");
             }
             return true;
@@ -84,12 +83,13 @@ public class PointCommand extends PluginCommand<PlayerPoint> {
             return this.sendHelp(sender, args);
         }
     }
+
     private boolean sendHelp(CommandSender sender, String[] args) {
         if ("help".equals(args[0])) {
             sender.sendMessage("§a§l >> §eHelp for PlayerPoints§a<<");
             sender.sendMessage(getHelp());
-            for(net.player.commands.SubCommand subCommand:commands){
-                if(subCommand.canUse(sender)){
+            for (net.player.commands.SubCommand subCommand : commands) {
+                if (subCommand.canUse(sender)) {
                     sender.sendMessage(subCommand.getHelp());
                 }
             }
@@ -99,7 +99,7 @@ public class PointCommand extends PluginCommand<PlayerPoint> {
     }
 
     public String getHelp() {
-        return "§a/points §7打开"+ Point.getPointName() +"GUI";
+        return "§a/points §7打开" + Point.getPointName() + "GUI";
     }
 
 }

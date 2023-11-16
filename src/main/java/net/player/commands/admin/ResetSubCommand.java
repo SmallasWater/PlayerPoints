@@ -29,19 +29,19 @@ public class ResetSubCommand extends SubCommand {
 
     @Override
     public String[] getAliases() {
-        return new String[]{"reset","clean","clear","清空"};
+        return new String[]{"reset", "clean", "clear", "清空"};
     }
 
     @Override
     public boolean execute(CommandSender sender, String[] args) {
-        if(args.length > 1){
+        if (args.length > 1) {
             String target = args[1];
             UUID uuid = Point.getUUIDByPlayerName(target);
-            if(uuid != null){
-                Point.setPoint(uuid,0.0D);
-                sender.sendMessage("成功清空 玩家 "+target+" "+ Point.getPointName());
-            }else{
-                sender.sendMessage("未找到 玩家"+target+"的 相关数据");
+            if (uuid != null) {
+                Point.setPoint(uuid, 0.0D);
+                sender.sendMessage("成功清空 玩家 " + target + " " + Point.getPointName());
+            } else {
+                sender.sendMessage("未找到 玩家" + target + "的 相关数据");
             }
         }
         return false;
@@ -49,6 +49,6 @@ public class ResetSubCommand extends SubCommand {
 
     @Override
     public String getHelp() {
-        return "§a/points reset <玩家> §7清空玩家"+ Point.getPointName()+ "§c(控制台)";
+        return "§a/points reset <玩家> §7清空玩家" + Point.getPointName() + "§c(控制台)";
     }
 }

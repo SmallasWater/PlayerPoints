@@ -31,14 +31,14 @@ public class SendPayMessageSubCommand extends SubCommand {
 
     @Override
     public boolean execute(CommandSender sender, String[] args) {
-        if(args.length > 1){
+        if (args.length > 1) {
             String playerName = args[1];
             try {
                 PlayerPoint.getInstance().getMcRmb().sendPayMessage(playerName);
             } catch (CodeException e) {
                 sender.sendMessage(e.getMessage());
             }
-        }else{
+        } else {
             sender.sendMessage("§c请输入玩家名称");
         }
         return true;

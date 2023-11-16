@@ -13,9 +13,11 @@ public class PlayerSetPointEvent extends Event implements Cancellable {
     public static HandlerList getHandlers() {
         return handlers;
     }
+
     private Object player;
     private double point;
-    public PlayerSetPointEvent(Object player, double point){
+
+    public PlayerSetPointEvent(Object player, double point) {
         this.player = player;
         this.point = point;
     }

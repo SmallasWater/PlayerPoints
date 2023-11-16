@@ -10,7 +10,6 @@ import net.player.commands.SubCommand;
 import java.util.UUID;
 
 
-
 /**
  * @author 若水
  */
@@ -31,43 +30,43 @@ public class TakeSubCommand extends SubCommand {
 
     @Override
     public String[] getAliases() {
-        return new String[]{"take","remove","reduce","减少","拿"};
+        return new String[]{"take", "remove", "reduce", "减少", "拿"};
     }
 
     @Override
     public boolean execute(CommandSender sender, String[] args) {
-        if(args.length > 2){
+        if (args.length > 2) {
             String name = args[1];
             String point = args[2];
             double p;
-            if(Point.isRightNumberPoint(point)){
+            if (Point.isRightNumberPoint(point)) {
                 p = Double.parseDouble(point);
-            }else{
+            } else {
                 sender.sendMessage("请输入正确的数值");
                 return false;
             }
-            if(p > 0){
+            if (p > 0) {
                 Player player = Server.getInstance().getPlayer(name);
-                if(player != null){
-                    if(Point.reducePoint(player.getUniqueId(),p)){
-                        sender.sendMessage("成功扣除 玩家"+player.getName()+" "+p+ Point.getPointName());
-                    }else{
-                        sender.sendMessage("玩家"+name+"没有这么多"+ Point.getPointName()+" 当前数量:"+ Point.myPoint(player));
+                if (player != null) {
+                    if (Point.reducePoint(player.getUniqueId(), p)) {
+                        sender.sendMessage("成功扣除 玩家" + player.getName() + " " + p + Point.getPointName());
+                    } else {
+                        sender.sendMessage("玩家" + name + "没有这么多" + Point.getPointName() + " 当前数量:" + Point.myPoint(player));
                     }
 
-                }else{
+                } else {
                     UUID uuid1 = Point.getUUIDByPlayerName(name);
-                    if(uuid1 != null){
-                        if(Point.reducePoint(uuid1,p)){
-                            sender.sendMessage("成功扣除 玩家"+ Point.getPlayerNameByUUID(uuid1)+" "+p+ Point.getPointName());
-                        }else{
-                            sender.sendMessage("玩家"+name+"没有这么多"+ Point.getPointName()+" 当前数量:"+ Point.myPoint(uuid1));
+                    if (uuid1 != null) {
+                        if (Point.reducePoint(uuid1, p)) {
+                            sender.sendMessage("成功扣除 玩家" + Point.getPlayerNameByUUID(uuid1) + " " + p + Point.getPointName());
+                        } else {
+                            sender.sendMessage("玩家" + name + "没有这么多" + Point.getPointName() + " 当前数量:" + Point.myPoint(uuid1));
                         }
-                    }else{
-                        sender.sendMessage("未找到 玩家"+name+"的 相关数据");
+                    } else {
+                        sender.sendMessage("未找到 玩家" + name + "的 相关数据");
                     }
                 }
-            }else{
+            } else {
                 sender.sendMessage("点券数量必须大于0");
             }
         }
@@ -76,7 +75,7 @@ public class TakeSubCommand extends SubCommand {
 
     @Override
     public String getHelp() {
-        return "§a/points take <玩家> <数量> §7扣除玩家一定数量的"+ Point.getPointName()+"§c(控制台)";
+        return "§a/points take <玩家> <数量> §7扣除玩家一定数量的" + Point.getPointName() + "§c(控制台)";
     }
 
 }

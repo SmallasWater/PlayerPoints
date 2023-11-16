@@ -15,13 +15,13 @@ public class LoadMoney {
 
     private int money = 0;
 
-    public LoadMoney(){
-        try{
+    public LoadMoney() {
+        try {
             Class.forName("me.onebone.economyapi.EconomyAPI");
             money = ECONOMY_API;
             PlayerPoint.getInstance().getLogger().info("检测到 EconomyAPI 对接 EconomyAPI 经济系统");
         } catch (ClassNotFoundException e) {
-            try{
+            try {
                 Class.forName("money.Money");
                 money = MONEY;
                 PlayerPoint.getInstance().getLogger().info("检测到 Money 对接 Money 经济系统");
@@ -33,22 +33,22 @@ public class LoadMoney {
 
     public String getName() {
         if (this.money == ECONOMY_API) {
-            return PlayerPoint.getInstance().getLanguage().getString("economyapi","金币");
-        } else if(money != 0){
-            return PlayerPoint.getInstance().getLanguage().getString("money","金条");
-        }else{
+            return PlayerPoint.getInstance().getLanguage().getString("economyapi", "金币");
+        } else if (money != 0) {
+            return PlayerPoint.getInstance().getLanguage().getString("money", "金条");
+        } else {
             return "无经济系统";
         }
     }
 
-    public void addMoney(Player player, double money){
+    public void addMoney(Player player, double money) {
         addMoney(player.getName(), money);
     }
 
-    private void addMoney(String player, double money){
-        switch (this.money){
+    private void addMoney(String player, double money) {
+        switch (this.money) {
             case MONEY:
-                if(Money.getInstance().getPlayers().contains(player)){
+                if (Money.getInstance().getPlayers().contains(player)) {
                     Money.getInstance().addMoney(player, (float) money);
                     return;
                 }
@@ -57,13 +57,10 @@ public class LoadMoney {
                 EconomyAPI.getInstance().addMoney(player, money, true);
                 return;
 
-            default:break;
+            default:
+                break;
         }
     }
-
-
-
-
 
 
 }

@@ -26,29 +26,29 @@ public class UpSubCommand extends SubCommand {
 
     @Override
     public String[] getAliases() {
-        return new String[]{"up","转移"};
+        return new String[]{"up", "转移"};
     }
 
     @Override
     public boolean execute(CommandSender sender, String[] args) {
-        if(args.length > 1){
+        if (args.length > 1) {
             boolean type = "uuid".equals(args[1]);
             Config config = PlayerPoint.getInstance().getPlayerUUIDConfig();
             Config config1 = PlayerPoint.getInstance().getPlayerNameConfig();
-            Map<String,Object> map;
-            if(type){
+            Map<String, Object> map;
+            if (type) {
                 map = config.getAll();
-                for(String name:map.keySet()){
-                    config1.set(Point.getPlayerNameByUUID(UUID.fromString(name)),map.get(name));
+                for (String name : map.keySet()) {
+                    config1.set(Point.getPlayerNameByUUID(UUID.fromString(name)), map.get(name));
                 }
                 config1.save();
                 sender.sendMessage("转换完成~~");
-            }else{
+            } else {
                 map = config1.getAll();
-                for(String name:map.keySet()){
+                for (String name : map.keySet()) {
                     UUID uuid = Point.getUUIDByPlayerName(name);
-                    if(uuid != null){
-                        config.set(uuid.toString(),map.get(name));
+                    if (uuid != null) {
+                        config.set(uuid.toString(), map.get(name));
                     }
                 }
                 config1.save();
@@ -60,6 +60,6 @@ public class UpSubCommand extends SubCommand {
 
     @Override
     public String getHelp() {
-        return "§a/points up <uuid/player> §7将玩家的"+ Point.getPointName()+"从 UUID 转移到 玩家名 或 相反";
+        return "§a/points up <uuid/player> §7将玩家的" + Point.getPointName() + "从 UUID 转移到 玩家名 或 相反";
     }
 }

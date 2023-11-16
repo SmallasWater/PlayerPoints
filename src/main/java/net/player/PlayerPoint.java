@@ -46,16 +46,14 @@ public class PlayerPoint extends PluginBase {
     private LoadMcRmb mcRmb;
 
 
-
-
     @Override
     public void onEnable() {
         instance = this;
         saveDefaultConfig();
         reloadConfig();
         this.getServer().getLogger().info("点券系统正在启动...");
-        if(Server.getInstance().getPluginManager().getPlugin("AutoUpData") != null){
-            if(AutoData.defaultUpData(this,this.getFile(),"SmallasWater","PlayerPoints")){
+        if (Server.getInstance().getPluginManager().getPlugin("AutoUpData") != null) {
+            if (AutoData.defaultUpData(this, this.getFile(), "SmallasWater", "PlayerPoints")) {
                 return;
             }
         }
@@ -64,22 +62,22 @@ public class PlayerPoint extends PluginBase {
         try {
             Class.forName("com.smallaswater.easysql.exceptions.MySqlLoginException");
             sql = new LoadSql();
-        }catch (Exception ignore){
+        } catch (Exception ignore) {
 
         }
-        if(sql != null){
+        if (sql != null) {
             canLoadSql = sql.getLoadSql();
-            if(canLoadSql){
+            if (canLoadSql) {
                 enable = sql.getEnable();
             }
 
         }
 
         this.load();
-        mcRmb = new LoadMcRmb(getConfig().getInt("mcrmb.sid",0),getConfig().getString("mcrmb.sign"));
+        mcRmb = new LoadMcRmb(getConfig().getInt("mcrmb.sid", 0), getConfig().getString("mcrmb.sign"));
         load = new LoadMoney();
         getServer().getCommandMap().register("PlayerPoints", new PointCommand(this));
-        this.getServer().getPluginManager().registerEvents(new PointListener(),this);
+        this.getServer().getPluginManager().registerEvents(new PointListener(), this);
     }
 
     public LoadMcRmb getMcRmb() {
@@ -91,23 +89,21 @@ public class PlayerPoint extends PluginBase {
     }
 
 
-
-
     public LoadMoney getLoad() {
         return load;
     }
 
-    public void load(){
-        if(!new File(this.getDataFolder()+"/language.yml").exists()){
-            saveResource("language.yml",false);
+    public void load() {
+        if (!new File(this.getDataFolder() + "/language.yml").exists()) {
+            saveResource("language.yml", false);
         }
-        language = new Config(this.getDataFolder()+"/language.yml",Config.YAML);
+        language = new Config(this.getDataFolder() + "/language.yml", Config.YAML);
         name = getConfig().getString("货币名称");
         pointConfig = getPointConfig();
         defaultPoint = getConfig().getDouble("基础数量");
         maxPoint = getConfig().getDouble("点券最大值");
         count = getConfig().getInt("排行榜显示玩家数量");
-        rmb = getConfig().getInt("rmb与点券兑换比例",10);
+        rmb = getConfig().getInt("rmb与点券兑换比例", 10);
 
     }
 
@@ -124,30 +120,31 @@ public class PlayerPoint extends PluginBase {
         return language;
     }
 
-    public Config getPointConfig(){
-        if(pointConfig == null){
-           if(canSaveUUID()){
-                pointConfig = new Config(this.getDataFolder()+"/point.yml",Config.YAML);
-            }else{
-                pointConfig = new Config(this.getDataFolder()+"/pointPlayer.yml",Config.YAML);
+    public Config getPointConfig() {
+        if (pointConfig == null) {
+            if (canSaveUUID()) {
+                pointConfig = new Config(this.getDataFolder() + "/point.yml", Config.YAML);
+            } else {
+                pointConfig = new Config(this.getDataFolder() + "/pointPlayer.yml", Config.YAML);
             }
         }
         return pointConfig;
     }
 
-    public boolean canUseSql(){
+    public boolean canUseSql() {
         return getConfig().getBoolean("database.open");
     }
-    public Config getPlayerUUIDConfig(){
-        return new Config(this.getDataFolder()+"/point.yml",Config.YAML);
+
+    public Config getPlayerUUIDConfig() {
+        return new Config(this.getDataFolder() + "/point.yml", Config.YAML);
     }
 
-    public Config getPlayerNameConfig(){
-        return new Config(this.getDataFolder()+"/pointPlayer.yml",Config.YAML);
+    public Config getPlayerNameConfig() {
+        return new Config(this.getDataFolder() + "/pointPlayer.yml", Config.YAML);
     }
 
-    public boolean canSaveUUID(){
-        return getConfig().getInt("存储类型",0) == 0;
+    public boolean canSaveUUID() {
+        return getConfig().getInt("存储类型", 0) == 0;
     }
 
     public int getCount() {
@@ -172,7 +169,7 @@ public class PlayerPoint extends PluginBase {
 
     @Override
     public void onDisable() {
-        if(this.enable != null){
+        if (this.enable != null) {
             enable.disable();
         }
     }

@@ -38,7 +38,7 @@ public class CheckMoneySubCommand extends SubCommand {
             @Override
             public void onRun() {
                 try {
-                    sender.sendMessage("§a 当前可以兑换 "+(PlayerPoint.getInstance().getMcRmb().checkMoney(sender.getName()) * PlayerPoint.getInstance().getRmb())+" "+PlayerPoint.getInstance().getPointName());
+                    sender.sendMessage("§a 当前可以兑换 " + (PlayerPoint.getInstance().getMcRmb().checkMoney(sender.getName()) * PlayerPoint.getInstance().getRmb()) + " " + PlayerPoint.getInstance().getPointName());
                 } catch (CodeException e) {
                     System.out.println(e.getMessage());
                 }
@@ -49,6 +49,6 @@ public class CheckMoneySubCommand extends SubCommand {
 
     @Override
     public String getHelp() {
-        return "§a/points check §7查看当前可兑换多少点券 ps: 1 rmb = "+PlayerPoint.getInstance().getRmb()+" "+PlayerPoint.getInstance().getPointName();
+        return "§a/points check §7查看当前可兑换多少点券 ps: 1 rmb = " + PlayerPoint.getInstance().getRmb() + " " + PlayerPoint.getInstance().getPointName();
     }
 }

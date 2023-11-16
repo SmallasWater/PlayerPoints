@@ -10,10 +10,11 @@ public class PlayerPayTargetEvent extends Event implements Cancellable {
     public static HandlerList getHandlers() {
         return handlers;
     }
-    private Object player,target;
+
+    private Object player, target;
     private double point;
 
-    public PlayerPayTargetEvent(Object player,Object target, double point){
+    public PlayerPayTargetEvent(Object player, Object target, double point) {
         this.player = player;
         this.point = point;
         this.target = target;

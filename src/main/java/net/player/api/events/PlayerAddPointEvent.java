@@ -6,8 +6,6 @@ import cn.nukkit.event.Event;
 import cn.nukkit.event.HandlerList;
 
 
-
-
 /**
  * @author 若水
  */
@@ -18,10 +16,11 @@ public class PlayerAddPointEvent extends Event implements Cancellable {
     public static HandlerList getHandlers() {
         return handlers;
     }
+
     private Object player;
     private double point;
 
-    public PlayerAddPointEvent(Object player, double point){
+    public PlayerAddPointEvent(Object player, double point) {
         this.player = player;
         this.point = point;
 

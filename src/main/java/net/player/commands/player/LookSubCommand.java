@@ -30,26 +30,26 @@ public class LookSubCommand extends SubCommand {
 
     @Override
     public String[] getAliases() {
-        return new String[]{"look","see"};
+        return new String[]{"look", "see"};
     }
 
     @Override
     public boolean execute(CommandSender sender, String[] args) {
-        if(args.length > 1){
+        if (args.length > 1) {
             String name = args[1];
-            if("".equals(name) || " ".equals(name)){
+            if ("".equals(name) || " ".equals(name)) {
                 return false;
             }
             Player p = Server.getInstance().getPlayer(name);
-            if(p == null){
+            if (p == null) {
                 sender.sendMessage("§c玩家不在线");
                 return false;
             }
             UUID uuid = Point.getUUIDByPlayerName(name);
-            if(uuid != null){
-                sender.sendMessage("§e玩家 §a"+name+"§e"+ Point.getPointName()+"数量为"+ Point.myPoint(uuid));
-            }else{
-                sender.sendMessage("§c未找到玩家 "+name+"相关数据");
+            if (uuid != null) {
+                sender.sendMessage("§e玩家 §a" + name + "§e" + Point.getPointName() + "数量为" + Point.myPoint(uuid));
+            } else {
+                sender.sendMessage("§c未找到玩家 " + name + "相关数据");
             }
         }
         return false;
@@ -57,6 +57,6 @@ public class LookSubCommand extends SubCommand {
 
     @Override
     public String getHelp() {
-        return "§a/points look <玩家> §7查看别人"+ Point.getPointName();
+        return "§a/points look <玩家> §7查看别人" + Point.getPointName();
     }
 }

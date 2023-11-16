@@ -16,8 +16,9 @@ import net.player.PlayerPoint;
 public class LoadSql {
 
     private SqlManager enable = null;
-    public boolean getLoadSql(){
-        if(PlayerPoint.getInstance().canUseSql()){
+
+    public boolean getLoadSql() {
+        if (PlayerPoint.getInstance().canUseSql()) {
             return loadSql();
         }
         return false;
@@ -27,21 +28,21 @@ public class LoadSql {
         return enable;
     }
 
-    private boolean loadSql(){
+    private boolean loadSql() {
         PlayerPoint.getInstance().getLogger().info("正在连接数据库");
         String user = PlayerPoint.getInstance().getConfig().getString("database.MySQL.username");
         int port = PlayerPoint.getInstance().getConfig().getInt("database.MySQL.port");
         String url = PlayerPoint.getInstance().getConfig().getString("database.MySQL.host");
         String passWorld = PlayerPoint.getInstance().getConfig().getString("database.MySQL.password");
         String table = PlayerPoint.getInstance().getConfig().getString("database.MySQL.database");
-        UserData data = new UserData(user,passWorld,url,port,table);
+        UserData data = new UserData(user, passWorld, url, port, table);
         try {
 
-            enable = new SqlManager(PlayerPoint.getInstance(),data);
+            enable = new SqlManager(PlayerPoint.getInstance(), data);
             enable.createTable(PlayerPoint.TABLE_NAME, new TableType("user", Types.CHAR),
                     new TableType("count", Types.DOUBLE));
             PlayerPoint.getInstance().getLogger().info("数据库连接成功");
-        }catch (MySqlLoginException e){
+        } catch (MySqlLoginException e) {
             PlayerPoint.getInstance().getLogger().info(e.getMessage());
             return false;
         }

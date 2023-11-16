@@ -35,25 +35,25 @@ public class PayMoneySubCommand extends SubCommand {
 
     @Override
     public boolean execute(CommandSender sender, String[] args) {
-        if(args.length > 1){
+        if (args.length > 1) {
             try {
                 int money = Integer.parseInt(args[1]);
-                if(money < 0){
+                if (money < 0) {
                     sender.sendMessage("§c请输入大于0的数值!");
                     return false;
-                }else{
+                } else {
                     LoadMcRmb mcRmb = PlayerPoint.getInstance().getMcRmb();
                     sender.sendMessage("§2正在兑换点券 请稍后...");
                     Server.getInstance().getScheduler().scheduleAsyncTask(PlayerPoint.getInstance(), new AsyncTask() {
                         @Override
                         public void onRun() {
                             try {
-                                if(mcRmb.toPay(sender.getName(),money)){
-                                    Point.addPoint(sender.getName(),money * PlayerPoint.getInstance().getRmb());
-                                }else{
+                                if (mcRmb.toPay(sender.getName(), money)) {
+                                    Point.addPoint(sender.getName(), money * PlayerPoint.getInstance().getRmb());
+                                } else {
                                     sender.sendMessage("§c兑换点券失败");
                                 }
-                            }catch (CodeException e){
+                            } catch (CodeException e) {
                                 sender.sendMessage("§c出现未知错误 请联系管理员解决问题");
                                 System.out.println(e.getMessage());
                             }
@@ -61,7 +61,7 @@ public class PayMoneySubCommand extends SubCommand {
                     });
 
                 }
-            }catch (Exception e){
+            } catch (Exception e) {
                 sender.sendMessage("§c 请输入正确的数值!");
                 return false;
             }
@@ -73,6 +73,6 @@ public class PayMoneySubCommand extends SubCommand {
 
     @Override
     public String getHelp() {
-        return "§a/points pm <rmb数量> §7兑换rmb为点券 ps: 1 rmb = "+PlayerPoint.getInstance().getRmb()+" "+PlayerPoint.getInstance().getPointName();
+        return "§a/points pm <rmb数量> §7兑换rmb为点券 ps: 1 rmb = " + PlayerPoint.getInstance().getRmb() + " " + PlayerPoint.getInstance().getPointName();
     }
 }

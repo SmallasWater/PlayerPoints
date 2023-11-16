@@ -28,20 +28,20 @@ public class MeSubCommand extends SubCommand {
 
     @Override
     public String[] getAliases() {
-        return new String[]{"me","my"};
+        return new String[]{"me", "my"};
     }
 
     @Override
     public boolean execute(CommandSender sender, String[] args) {
         UUID uuid = ((Player) sender).getUniqueId();
         sender.sendMessage(PlayerPoint.getInstance().getLanguage().getString("player.point.me")
-                .replace("%point%", Point.myPoint(uuid)+"")
+                .replace("%point%", Point.myPoint(uuid) + "")
                 .replace("%name%", Point.getPointName()));
         return false;
     }
 
     @Override
     public String getHelp() {
-        return "§a/points me §7查看"+ Point.getPointName();
+        return "§a/points me §7查看" + Point.getPointName();
     }
 }
