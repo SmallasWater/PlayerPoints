@@ -47,7 +47,6 @@ public class CreateWindow {
     }
 
     public static void sendLead(Player player) {
-
         FormWindowSimple simple = new FormWindowSimple(PlayerPoint.getInstance().getLanguage().getString("window.title")
                 .replace("%name%", Point.getPointName()) + "-- 排行榜", "");
         StringBuilder builder = new StringBuilder();
@@ -77,8 +76,8 @@ public class CreateWindow {
                 .replace("%name%", Point.getPointName()) + "-- 兑换");
         custom.addElement(new ElementLabel(PlayerPoint.getInstance().getLanguage().getString("window.getmoney"
                 , "§d将点券兑换为当前服务器基础经济\n当前经济系统: %system% \n当前兑换比例: 1:%max%").replace("%system%"
-                , PlayerPoint.getInstance().getLoad().getName()).replace("%max%", Point.getMax() + "")));
-        custom.addElement(new ElementInput("请输入兑换的点券数量", "例如: 1"));
+                , PlayerPoint.getInstance().getLoad().getName()).replace("%max%", Point.getMax() + ""))); //0
+        custom.addElement(new ElementInput("请输入兑换的点券数量", "例如: 1")); //1
         player.showFormWindow(custom, Q);
 
     }
@@ -86,8 +85,8 @@ public class CreateWindow {
     public static void sendPay(Player player) {
         FormWindowCustom custom = new FormWindowCustom(PlayerPoint.getInstance().getLanguage().getString("window.title")
                 .replace("%name%", Point.getPointName()) + "-- 支付");
-        custom.addElement(new ElementInput("请输入要转账的玩家名", "例如: Steve"));
-        custom.addElement(new ElementInput("请输入要转账的数量", "例如: 10"));
+        custom.addElement(new ElementInput("请输入要转账的玩家名", "例如: Steve")); //0
+        custom.addElement(new ElementInput("请输入要转账的数量", "例如: 10")); //1
         player.showFormWindow(custom, PAY);
     }
 }
